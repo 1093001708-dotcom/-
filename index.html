@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="行动积分" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>行动积分</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow" id="todayLabel">今日</p>
+        <h1>行动积分</h1>
+        <p class="subtitle">把任务完成，换成可见的奖励。</p>
+      </div>
+      <button class="ghost-button" id="installHelpBtn" type="button">安装说明</button>
+    </header>
+
+    <main>
+      <section class="score-grid" aria-label="积分概览">
+        <article class="score-card primary">
+          <span>即时积分</span>
+          <strong id="instantPoints">0</strong>
+          <small>可兑换小奖励</small>
+        </article>
+        <article class="score-card">
+          <span>长期积分</span>
+          <strong id="savingPoints">0</strong>
+          <small>只兑换成长/恢复奖励</small>
+        </article>
+        <article class="score-card">
+          <span>今日获得</span>
+          <strong id="todayEarned">0</strong>
+          <small id="todayDoneText">完成 0 个任务</small>
+        </article>
+        <article class="score-card">
+          <span>连续行动</span>
+          <strong id="streakDays">0</strong>
+          <small>有完成记录的连续天数</small>
+        </article>
+      </section>
+
+      <nav class="tabs" aria-label="主功能切换">
+        <button class="tab active" data-tab="tasks" type="button">今日任务</button>
+        <button class="tab" data-tab="rewards" type="button">奖励商店</button>
+        <button class="tab" data-tab="review" type="button">日报</button>
+        <button class="tab" data-tab="data" type="button">数据</button>
+      </nav>
+
+      <section id="tasks" class="panel active">
+        <div class="section-heading">
+          <div>
+            <h2>今日任务</h2>
+            <p>每天最多 3 个核心任务，再加 1 个保底任务。</p>
+          </div>
+          <button class="secondary-button" id="addTaskBtn" type="button">添加任务</button>
+        </div>
+
+        <div class="quick-templates">
+          <button data-template="followup" type="button">回访 3 个家长</button>
+          <button data-template="writing" type="button">写 500 字文章</button>
+          <button data-template="fitness" type="button">整理体能知识点</button>
+          <button data-template="reading" type="button">看书 20 分钟</button>
+          <button data-template="basketball" type="button">篮球 30 分钟</button>
+          <button data-template="assertive" type="button">微争取 1 次</button>
+          <button data-template="baseline" type="button">保底：写 50 字</button>
+        </div>
+
+        <form class="form-card hidden" id="taskForm">
+          <label>
+            任务名称
+            <input id="taskTitle" maxlength="60" placeholder="例如：给 3 个家长做回访" required />
+          </label>
+          <label>
+            完成标准
+            <textarea id="taskStandard" maxlength="180" placeholder="例如：完成 3 个家长的有效沟通，并记录反馈"></textarea>
+          </label>
+          <div class="form-row">
+            <label>
+              类型
+              <select id="taskType">
+                <option value="core">核心任务</option>
+                <option value="growth">成长任务</option>
+                <option value="baseline">保底任务</option>
+              </select>
+            </label>
+            <label>
+              积分
+              <input id="taskPoints" type="number" min="1" max="100" value="20" required />
+            </label>
+          </div>
+          <label>
+            方向
+            <select id="taskArea">
+              <option value="工作发展">工作发展</option>
+              <option value="幼儿体能">幼儿体能</option>
+              <option value="写作自媒体">写作自媒体</option>
+              <option value="个人成长">个人成长</option>
+              <option value="身体训练">身体训练</option>
+              <option value="主动争取">主动争取</option>
+            </select>
+          </label>
+          <div class="form-actions">
+            <button class="primary-button" type="submit">保存任务</button>
+            <button class="ghost-button" id="cancelTaskBtn" type="button">取消</button>
+          </div>
+        </form>
+
+        <div id="taskList" class="item-list"></div>
+      </section>
+
+      <section id="rewards" class="panel">
+        <div class="section-heading">
+          <div>
+            <h2>奖励商店</h2>
+            <p>小奖励用即时积分，成长/恢复奖励用长期积分。</p>
+          </div>
+          <button class="secondary-button" id="addRewardBtn" type="button">添加奖励</button>
+        </div>
+
+        <form class="form-card hidden" id="rewardForm">
+          <label>
+            奖励名称
+            <input id="rewardTitle" maxlength="60" placeholder="例如：刷短视频 20 分钟" required />
+          </label>
+          <div class="form-row">
+            <label>
+              消耗积分
+              <input id="rewardCost" type="number" min="1" max="5000" value="20" required />
+            </label>
+            <label>
+              账户
+              <select id="rewardAccount">
+                <option value="instant">即时积分</option>
+                <option value="saving">长期积分</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            限制说明
+            <input id="rewardLimit" maxlength="80" placeholder="例如：每天最多一次，必须计时" />
+          </label>
+          <div class="form-actions">
+            <button class="primary-button" type="submit">保存奖励</button>
+            <button class="ghost-button" id="cancelRewardBtn" type="button">取消</button>
+          </div>
+        </form>
+
+        <div id="rewardList" class="item-list"></div>
+      </section>
+
+      <section id="review" class="panel">
+        <div class="section-heading">
+          <div>
+            <h2>今日行动日报</h2>
+            <p>生成 Markdown，直接复制到 Obsidian。</p>
+          </div>
+          <button class="secondary-button" id="generateReviewBtn" type="button">生成</button>
+        </div>
+        <label class="wide-label">
+          今日反思
+          <textarea id="reflection" maxlength="600" placeholder="例如：今天启动比较慢，但还是完成了核心任务。"></textarea>
+        </label>
+        <label class="wide-label">
+          明日建议
+          <textarea id="tomorrowPlan" maxlength="600" placeholder="例如：明天只设置 3 个核心任务，先完成回访。"></textarea>
+        </label>
+        <textarea id="markdownOutput" class="markdown-output" readonly placeholder="点击“生成”后，这里会出现 Markdown 日报。"></textarea>
+        <div class="form-actions">
+          <button class="primary-button" id="copyMarkdownBtn" type="button">复制 Markdown</button>
+          <button class="secondary-button" id="downloadMarkdownBtn" type="button">下载 .md</button>
+        </div>
+      </section>
+
+      <section id="data" class="panel">
+        <div class="section-heading">
+          <div>
+            <h2>数据与设置</h2>
+            <p>数据只保存在当前设备浏览器里。换手机前先导出备份。</p>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <label>
+            即时积分比例：<span id="splitLabel">70%</span>
+            <input id="splitRange" type="range" min="50" max="100" step="5" value="70" />
+          </label>
+          <p>完成任务后，部分积分进入即时账户，剩余进入长期账户。比例越低，越能积累长期奖励。</p>
+        </div>
+
+        <div class="form-actions wrap">
+          <button class="secondary-button" id="exportDataBtn" type="button">导出 JSON 备份</button>
+          <label class="file-button">
+            导入 JSON 备份
+            <input id="importDataInput" type="file" accept="application/json" />
+          </label>
+          <button class="danger-button" id="resetDataBtn" type="button">清空全部数据</button>
+        </div>
+
+        <h3>最近记录</h3>
+        <div id="logList" class="log-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="installDialog">
+    <h2>安装到 iPhone 主屏幕</h2>
+    <p>正式使用建议部署到 GitHub Pages，再用 Safari 打开网址。</p>
+    <ol>
+      <li>用 iPhone Safari 打开这个网页。</li>
+      <li>点击底部分享按钮。</li>
+      <li>选择“添加到主屏幕”。</li>
+      <li>名称保留“行动积分”，点击“添加”。</li>
+    </ol>
+    <p class="muted">第一版使用本机存储，不要清除 Safari 网站数据。换手机前先导出 JSON 备份。</p>
+    <button class="primary-button" id="closeInstallDialogBtn" type="button">知道了</button>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

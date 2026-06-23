@@ -1,0 +1,25 @@
+{
+  "name": "行动积分",
+  "short_name": "行动积分",
+  "description": "用任务积分、奖励兑换和日报复盘来减少三天打鱼两天晒网。",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#111827",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
